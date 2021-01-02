@@ -9,7 +9,7 @@
 
 // Face Mesh - https://github.com/tensorflow/tfjs-models/tree/master/facemesh
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./App.css";
 import * as tf from "@tensorflow/tfjs";
 // OLD MODEL
@@ -23,7 +23,7 @@ import { drawMesh } from "./utilities";
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-
+  const [state_face, setState_face] = useState()
   //  Load posenet
   const runFacemesh = async () => {
     // OLD MODEL
@@ -35,7 +35,7 @@ function App() {
     const net = await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
     setInterval(() => {
       detect(net);
-    }, 150);
+    }, 500);
   };
 
   const detect = async (net) => {
@@ -61,12 +61,28 @@ function App() {
       // OLD MODEL
       //       const face = await net.estimateFaces(video);
       // NEW MODEL
-      const face = await net.estimateFaces({ input: video });
-      console.log(face);
+      var face = await net.estimateFaces({ input: video });
+      // console.(face.length);
+
+      setState_face(face.length)
 
       // Get canvas context
       const ctx = canvasRef.current.getContext("2d");
       requestAnimationFrame(() => { drawMesh(face, ctx) });
+      if (face.length === 1) {
+        for (let i = 0; i < 1000;) {
+          i++
+          if (i == 400) {
+            var today = new Date();
+            var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date + ' ' + time;
+            if (face != 0)
+              console.log('persone', dateTime)
+          }
+        }
+      }
+
     }
   };
 
@@ -75,6 +91,21 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <div
+          style={{
+            position: "absolute",
+            marginLeft: "auto",
+            marginRight: "auto",
+            left: 0,
+            right: 0,
+            top: 0,
+            textAlign: "center",
+            zindex: 10,
+            width: 640,
+            height: 480,
+
+
+          }}>Person in Room: {state_face}</div>
         <Webcam
           ref={webcamRef}
           style={{
@@ -87,7 +118,7 @@ function App() {
             zindex: 9,
             width: 640,
             height: 480,
-            transform: [{ rotate: '90deg' }]
+            // transform: [{ rotate: '90deg' }]
 
           }}
         />
@@ -107,6 +138,7 @@ function App() {
           }}
         />
       </header>
+
     </div>
   );
 }
