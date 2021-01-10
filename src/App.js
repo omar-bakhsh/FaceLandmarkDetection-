@@ -35,7 +35,7 @@ function App() {
     const net = await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
     setInterval(() => {
       detect(net);
-    }, 500);
+    }, 100);
   };
 
   const detect = async (net) => {
@@ -78,7 +78,7 @@ function App() {
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             var dateTime = date + ' ' + time;
             if (face != 0)
-              console.log('persone', dateTime)
+              setTimeout(function () { console.log('persone', dateTime); console.table(face); }, 3000);
           }
         }
       }
@@ -99,7 +99,10 @@ function App() {
             left: 0,
             right: 0,
             top: 0,
-            textAlign: "center",
+            textAlign: "left",
+            padding: 10,
+            fontSize: 30,
+            justifyContent: 'center',
             zindex: 10,
             width: 640,
             height: 480,
